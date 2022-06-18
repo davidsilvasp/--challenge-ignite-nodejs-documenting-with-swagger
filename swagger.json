@@ -1,0 +1,306 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Atlas",
+    "description": "Essa é uma documentação sobre a Atlas API",
+    "version": 1.0
+  },
+
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Creates a user.",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "example": {
+                  "name": "David",
+                  "email": "david@email.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There is already an email in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User already exists."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Returns all users",
+        "description": "Only `admin` users can access.",
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "user_id",
+            "required": "true",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User is not admin or does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User is not admin."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "summary": "Returns user by id.",
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": "true",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User does not exist."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "summary": "Sets a user to be an administrator.",
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": "true",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User does not exist."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "admin": {
+            "type": "boolean",
+            "enum": {
+              "true": [true, false]
+            }
+          },
+          "created_at": {
+            "type": "date-time"
+          },
+          "updated_at": {
+            "type": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "example": {
+          "id": "29207437-61e4-4ea0-89b4-193bf056b66d",
+          "admin": false,
+          "created_at": "2022-06-17T22:18:34.909Z",
+          "updated_at": "2022-06-17T22:18:34.909Z",
+          "name": "David",
+          "email": "david@email.com"
+        }
+      },
+      "Users": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "admin": {
+              "type": "boolean",
+              "enum": {
+                "true": [true, false]
+              }
+            },
+            "created_at": {
+              "type": "date-time"
+            },
+            "updated_at": {
+              "type": "date-time"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        },
+        "example": [
+          {
+            "id": "cb6b3450-1374-427b-8876-109906df934d",
+            "admin": false,
+            "created_at": "2022-06-17T23:31:18.131Z",
+            "updated_at": "2022-06-17T23:31:18.131Z",
+            "name": "David",
+            "email": "david@email.com"
+          },
+          {
+            "id": "7b943740-b630-45d8-83d7-40be815e9e02",
+            "admin": true,
+            "created_at": "2022-06-17T23:31:27.819Z",
+            "updated_at": "2022-06-17T23:31:54.930Z",
+            "name": "Melissa",
+            "email": "melissa@email.com"
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "Users management."
+    }
+  ]
+}
